@@ -6,24 +6,20 @@
 
 ### 1. GitHub Token の作成
 
-**推奨: Fine-grained Personal Access Token を使用**
+**Fine-grained Personal Access Token を使用（推奨）**
 
 1. GitHub.com → Settings → Developer settings → Personal access tokens → Fine-grained tokens
 2. **Generate new token** をクリック
 3. 以下を設定：
-   - **Resource owner**: `FMs-sugiyama`
-   - **Repository access**: `tmp-generator` を選択
-   - **Permissions**: `Actions: write` を付与
-4. トークンを生成してコピー
-
-**代替案: Classic Personal Access Token**
-
-1. GitHub.com → Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. **Generate new token (classic)** をクリック
-3. **Scopes**: `repo` を選択
-4. トークンを生成してコピー
-
-※ Fine-grained token の方がセキュリティ上推奨されます
+   - **Token name**: `tmp-document-dispatch`
+   - **Expiration**: 90 days（適切な期間）
+   - **Resource owner**: `FMs-sugiyama` を選択
+   - **Repository access**: **Selected repositories** を選択
+   - **対象リポジトリ**: `FMs-sugiyama/tmp-generator` を明示的に追加
+   - **Repository permissions**:
+     - **Contents**: `Write`
+     - **Metadata**: `Read`
+4. **Generate token** をクリックしてトークンをコピー
 
 ### 2. Repository Secret の設定
 
@@ -50,7 +46,15 @@ Markdownファイルを追加・編集してpushすると、`.github/workflows/p
 ## トラブルシューティング
 
 - **`GH_TOKEN` が空のエラー**: `FACT_CHECKER_PAT` シークレットが正しく設定されていることを確認
+- **403 Forbidden エラー (Fine-grained token)**: 
+  - `FMs-sugiyama/tmp-generator` が **Repository access** に明示的に追加されていることを確認
+  - **Repository permissions** で `Actions: Write` が設定されていることを確認
+  - トークンの有効期限が切れていないことを確認
 - **API権限エラー**: 
   - Fine-grained token: `Actions: write` 権限が付与されていることを確認
   - Classic PAT: `repo` スコープが選択されていることを確認
 - **リポジトリアクセスエラー**: トークンが `tmp-generator` リポジトリにアクセス権限を持っていることを確認
+
+### よくある問題
+- Fine-grained token で **Selected repositories** を選んだが、対象リポジトリを追加し忘れた
+- **Repository permissions** の設定で `Actions` を `Write` にし忘れた
