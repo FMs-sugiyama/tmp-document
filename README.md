@@ -2,6 +2,18 @@
 
 このリポジトリは `team-mirai/policy` の代替テスト環境として、Vector Store の自動再生成機能をテストするために使用されます。
 
+## 必要な環境設定一覧
+
+### Repository Variables（必須）
+- `FACT_CHECKER_REPO`: ターゲットリポジトリ名（例：`FMs-sugiyama/tmp-generator`）
+  - **設定場所**: GitHub リポジトリの Settings → Secrets and variables → Actions → Variables タブ
+
+### Repository Secrets（必須・設定済み）
+- `FACT_CHECKER_PAT`: Fine-grained Personal Access Token（対象リポジトリへのアクセス権限付き）
+  - **設定場所**: GitHub リポジトリの Settings → Secrets and variables → Actions → Secrets タブ
+
+---
+
 ## セットアップ手順
 
 ### 1. GitHub Token の作成
@@ -21,20 +33,27 @@
      - **Metadata**: `Read`
 4. **Generate token** をクリックしてトークンをコピー
 
-### 2. Repository Variables の設定
+### 2. Repository Variables の設定（🔴 新規設定が必要）
+
+**`FACT_CHECKER_REPO` 変数の設定**:
 
 1. https://github.com/FMs-sugiyama/tmp-document に移動
 2. **Settings** タブをクリック
 3. 左サイドバーの **Secrets and variables** → **Actions** をクリック
-4. **Variables** タブをクリック
+4. **Variables** タブをクリック（Secretsタブではありません）
 5. **New repository variable** ボタンをクリック
 6. 以下を入力：
    - **Name**: `FACT_CHECKER_REPO`
    - **Value**: `FMs-sugiyama/tmp-generator` （ターゲットリポジトリ名）
 7. **Add variable** をクリック
 
-### 3. Repository Secret の設定
+この変数により、ワークフローが `repository_dispatch` を送信する先のリポジトリが決まります。
 
+### 3. Repository Secret の設定（✅ 設定済み）
+
+`FACT_CHECKER_PAT` シークレットは既に設定済みです。
+
+参考：設定方法
 1. https://github.com/FMs-sugiyama/tmp-document に移動
 2. **Settings** タブをクリック
 3. 左サイドバーの **Secrets and variables** → **Actions** をクリック
