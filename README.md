@@ -21,27 +21,40 @@
      - **Metadata**: `Read`
 4. **Generate token** をクリックしてトークンをコピー
 
-### 2. Repository Secret の設定
+### 2. Repository Variables の設定
 
 1. https://github.com/FMs-sugiyama/tmp-document に移動
 2. **Settings** タブをクリック
 3. 左サイドバーの **Secrets and variables** → **Actions** をクリック
-4. **New repository secret** ボタンをクリック
-5. 以下を入力：
+4. **Variables** タブをクリック
+5. **New repository variable** ボタンをクリック
+6. 以下を入力：
+   - **Name**: `FACT_CHECKER_REPO`
+   - **Value**: `FMs-sugiyama/tmp-generator` （ターゲットリポジトリ名）
+7. **Add variable** をクリック
+
+### 3. Repository Secret の設定
+
+1. https://github.com/FMs-sugiyama/tmp-document に移動
+2. **Settings** タブをクリック
+3. 左サイドバーの **Secrets and variables** → **Actions** をクリック
+4. **Secrets** タブを選択
+5. **New repository secret** ボタンをクリック
+6. 以下を入力：
    - **Name**: `FACT_CHECKER_PAT`
-   - **Secret**: 手順1で作成したトークン（Fine-grained または Classic PAT）
-6. **Add secret** をクリック
+   - **Secret**: 手順1で作成したトークン（Fine-grained PAT）
+7. **Add secret** をクリック
 
-### 3. ワークフローのテスト
+### 4. ワークフローのテスト
 
-Markdownファイルを追加・編集してpushすると、`.github/workflows/publish.yml` が自動実行され、`tmp-generator` リポジトリに `repository_dispatch` イベントが送信されます。
+Markdownファイルを追加・編集してpushすると、`.github/workflows/publish.yml` が自動実行され、`FACT_CHECKER_REPO` 変数で指定されたリポジトリに `repository_dispatch` イベントが送信されます。
 
 ## ワークフローの動作
 
 1. `**/*.md` ファイルが変更されると `publish.yml` が実行
 2. 変更されたファイルのリストを取得
-3. `FMs-sugiyama/tmp-generator` に `repository_dispatch` イベントを送信
-4. `tmp-generator` 側で Vector Store の再構築処理が開始
+3. `FACT_CHECKER_REPO` 変数で指定されたリポジトリに `repository_dispatch` イベントを送信
+4. 対象リポジトリ側で Vector Store の再構築処理が開始
 
 ## トラブルシューティング
 

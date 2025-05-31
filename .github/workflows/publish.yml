@@ -14,9 +14,10 @@ jobs:
             | tr '\n' ',')" >> "$GITHUB_OUTPUT"
       - name: Send repository_dispatch
         env:
-          GH_TOKEN: ${{ secrets.FACT_CHECKER_PAT }}   # scope: repo
+          GH_TOKEN: ${{ secrets.FACT_CHECKER_PAT }} # scope: repo
+          TARGET_REPO: ${{ vars.FACT_CHECKER_REPO }} # e.g., "user/fact-checker"
         run: |
-          cat <<EOF | gh api repos/FMs-sugiyama/tmp-generator/dispatches --input -
+          cat <<EOF | gh api repos/$TARGET_REPO/dispatches --input -
           {
             "event_type": "embed",
             "client_payload": {
