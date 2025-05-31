@@ -16,7 +16,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FACT_CHECKER_PAT }}   # scope: repo
         run: |
-          gh api repos/FMs-sugiyama/tmp-generator/dispatches \
-            --method POST \
-            --field event_type=embed \
-            --raw-field client_payload="{\"sha\":\"${{ github.sha }}\",\"files\":\"${{ steps.diff.outputs.files }}\"}"
+          cat <<EOF | gh api repos/FMs-sugiyama/tmp-generator/dispatches --input -
+          {
+            "event_type": "embed",
+            "client_payload": {
+              "sha": "${{ github.sha }}",
+              "files": "${{ steps.diff.outputs.files }}"
+            }
+          }
+          EOF
