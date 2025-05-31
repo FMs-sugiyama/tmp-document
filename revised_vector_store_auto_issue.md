@@ -46,9 +46,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FACT_CHECKER_PAT }}   # scope: repo
         run: |
-          gh api repos/team-mirai-volunteer/fact-checker/dispatches \
-            -F event_type=embed \
-            -F client_payload="{\"sha\":\"${{ github.sha }}\",\"files\":\"${{ steps.diff.outputs.files }}\"}"
+          cat <<EOF | gh api repos/team-mirai-volunteer/fact-checker/dispatches --input -
+          {
+            "event_type": "embed",
+            "client_payload": {
+              "sha": "${{ github.sha }}",
+              "files": "${{ steps.diff.outputs.files }}"
+            }
+          }
+          EOF
 ```
 
 ### 2-2. `fact-checker` の `embed.yml`
@@ -173,7 +179,17 @@ gcloud secrets add-iam-policy-binding VECTOR_STORE_ID-backup \
   --role="roles/secretmanager.secretAccessor"
 ```
 
-### 3-2. 環境変数の更新
+### 3-2. トラブルシューティング
+
+**422 Invalid request エラーの対処**:
+- JSONペイロードが文字列として送信される問題
+- heredoc + `--input -` を使用してJSONオブジェクトとして送信
+
+**403 Forbidden エラーの対処**:
+- Fine-grained tokenで対象リポジトリが明示的に選択されていることを確認
+- Repository permissions で適切な権限が設定されていることを確認
+
+### 3-3. 環境変数の更新
 
 Cloud Runデプロイ時：
 
@@ -230,7 +246,9 @@ bun add @google-cloud/secret-manager
 
 ## 5. 実装タスク一覧
 
-• **policy-repo**: `publish.yml` 追加・PAT (`FACT_CHECKER_PAT`) 登録
+• **policy-repo**: `publish.yml` 追加・Fine-grained PAT (`FACT_CHECKER_PAT`) 登録
+  - Repository access: Selected repositories で対象リポジトリを明示的に追加
+  - Repository permissions: Contents: Write, Metadata: Read を設定
 • **fact-checker**: `embed.yml` + `fact-check.ts` 改修 + 依存関係追加
 • **Google Cloud**: Secret Manager設定・サービスアカウント権限設定
 • **CI Secrets**: `GCLOUD_SERVICE_KEY` `PROJECT_ID` を fact-checker に追加
