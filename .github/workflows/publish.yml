@@ -1,0 +1,21 @@
+name: Fire-Vector-Rebuild
+on:
+  push:
+    paths: ['**/*.md']
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: diff
+        run: |
+          echo "files=$(git diff --name-only ${{ github.event.before }}...${{ github.sha }} \
+            | tr '\n' ',')" >> "$GITHUB_OUTPUT"
+      - name: Send repository_dispatch
+        env:
+          GH_TOKEN: ${{ secrets.FACT_CHECKER_PAT }}   # scope: repo
+        run: |
+          gh api repos/FMs-sugiyama/tmp-generator/dispatches \
+            -F event_type=embed \
+            -F client_payload="{\"sha\":\"${{ github.sha }}\",\"files\":\"${{ steps.diff.outputs.files }}\"}"
